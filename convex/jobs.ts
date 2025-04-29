@@ -11,7 +11,7 @@ export const createTask = mutation({
     location: v.string(),
     status: v.string(), //open    
     description: v.string(), //open 
-    companyId:v.id('companies'),       
+    companyId:v.optional(v.id('companies')),       
     employer:v.string(),  
   },
   handler: async (ctx, args) => {
@@ -40,7 +40,17 @@ export const getTasks = query({
         .order("desc")
         .collect();
 
-        return tasks;
+        // return tasks;
+        return Promise.all(
+            tasks.map(async (booking) => {
+                
+              const company = booking.companyId == undefined ? undefined : await ctx.db.get(booking?.companyId);
+              return {
+                ...booking,
+                company
+              };
+            })
+          );
     },
 });
 
@@ -55,7 +65,16 @@ export const getTasksByUser = query({
         .order("desc")
         .collect();
 
-        return tasks;
+        return Promise.all(
+          tasks.map(async (booking) => {
+              
+            const company = booking.companyId == undefined ? undefined : await ctx.db.get(booking?.companyId);
+            return {
+              ...booking,
+              company
+            };
+          })
+        );
     },
 });
 
@@ -77,7 +96,7 @@ export const updateTask = mutation({
         location: v.string(),
         status: v.string(), //open    
         description: v.string(), //open 
-        companyId:v.id('companies'),       
+        companyId:v.optional(v.id('companies')),       
         employer:v.string(), 
     },
     handler: async (ctx, args) => {

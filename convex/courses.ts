@@ -98,6 +98,22 @@ export const updateTask = mutation({
     },
 });
 
+export const updateTaskStatus = mutation({
+    args: {
+        id:v.id('courses'),        
+        status: v.string(),
+    },
+    handler: async (ctx, args) => {
+      const { id } = args;
+      
+      await ctx.db.patch(id, 
+        {             
+            status: args.status, 
+        });
+      
+    },
+});
+
 export const deleteTask = mutation({
     args: { id: v.id("courses") },
     handler: async (ctx, args) => {

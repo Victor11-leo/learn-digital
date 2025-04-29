@@ -22,13 +22,13 @@ export default defineSchema({
     video: v.string(),    
     instructorNotes: v.string(),    
     content: v.string(),    
-    chapterId: v.optional(v.id("chapters")),    
-  }),  
+    chapterId: v.optional(v.id("courses")),    
+  }).index("by_chapterId", ["chapterId"]),  
   quizes: defineTable({
     title: v.string(),    
     passingPercentage: v.string(),    
     courseId:v.optional(v.id("courses"))        
-  }),  
+  }).index("by_courseId", ["courseId"]),  
   questions: defineTable({
     question: v.string(),    
     answers: v.array(v.object({
@@ -36,7 +36,7 @@ export default defineSchema({
         correct:v.boolean(),
     })),        
     quizId:v.optional(v.id("quizes"))  
-  }),  
+  }).index("by_quizId", ["quizId"]),  
   certifications: defineTable({
     userId: v.string(),    
     courseId: v.id('courses'),        
@@ -49,7 +49,7 @@ export default defineSchema({
     location: v.string(),
     status: v.string(), //open    
     description: v.string(), //open 
-    companyId:v.id('companies'),       
+    companyId:v.optional(v.id('companies')),       
     employer:v.string(),       
   }).index("by_employer", ["employer"]),  
   companies: defineTable({
@@ -64,10 +64,14 @@ export default defineSchema({
     courseId: v.id("courses"),    
     certificateId: v.optional(v.id("certificates")),    
     status: v.string(), //ongoing or complete or banned       
-  }).index("by_courseId", ["courseId"]),  
+  })
+  .index("by_userId", ["user"])
+  .index("by_courseId", ["courseId"]),  
   applicants: defineTable({
     user: v.string(),
     jobId: v.id("jobs"),    
     status: v.string(), //ongoing or complete or banned       
-  }).index("by_jobId", ["jobId"]),  
+  })
+  .index("by_userId", ["user"])
+  .index("by_jobId", ["jobId"]),  
 });

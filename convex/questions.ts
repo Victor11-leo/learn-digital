@@ -35,6 +35,21 @@ export const getTasks = query({
     },
 });
 
+export const getTasksByQuiz = query({
+    args: {
+        quizId:v.optional(v.id("quizes"))
+    },
+    handler: async (ctx, args) => {
+        const tasks = await ctx.db
+        .query("questions")   
+        .withIndex("by_quizId",(q) => q.eq("quizId",args.quizId))            
+        .order("desc")
+        .collect();
+
+        return tasks;
+    },
+});
+
 
 export const updateTask = mutation({
     args: {

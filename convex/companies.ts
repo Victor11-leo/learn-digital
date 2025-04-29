@@ -35,6 +35,15 @@ export const getTasks = query({
     },
 });
 
+export const getTasksById = query({
+    args: {companyId:v.id("companies")},
+    handler: async (ctx, args) => {
+        const tasks = await ctx.db.get(args.companyId)        
+
+        return tasks;
+    },
+});
+
 export const updateTask = mutation({
     args: {
         id:v.id('companies'),

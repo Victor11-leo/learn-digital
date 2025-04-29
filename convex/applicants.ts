@@ -28,7 +28,16 @@ export const getTasks = query({
         .order("desc")
         .collect();
 
-        return tasks;
+        // return tasks;
+        return Promise.all(
+            tasks.map(async (booking) => {
+              const job = await ctx.db.get(booking.jobId);
+              return {
+                ...booking,
+                job
+              };
+            })
+          );
     },
 });
 
@@ -40,6 +49,21 @@ export const getTasksByCourse = query({
         const tasks = await ctx.db
         .query("applicants")        
         .withIndex("by_jobId",(q) => q.eq("jobId",args.jobId))
+        .order("desc")
+        .collect();
+
+        return tasks;
+    },
+});
+
+export const getTasksByUser = query({
+    args: {
+        userId:v.string()  
+    },
+    handler: async (ctx, args) => {
+        const tasks = await ctx.db
+        .query("applicants")        
+        .withIndex("by_userId",(q) => q.eq("user",args.userId))
         .order("desc")
         .collect();
 

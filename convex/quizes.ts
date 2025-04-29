@@ -28,7 +28,51 @@ export const getTasks = query({
         .order("desc")
         .collect();
 
-        return tasks;
+        
+        return Promise.all(
+          tasks.map(async (booking) => {
+            const course = await ctx.db.get(booking.courseId);
+            return {
+              ...booking,
+              course
+            };
+          })
+        );
+    },
+});
+
+export const getTasksByCourse = query({
+    args: {
+      courseId:v.optional(v.id("courses")) 
+    },
+    handler: async (ctx, args) => {
+        const tasks = await ctx.db
+        .query("quizes") 
+        .withIndex("by_courseId",(q) => q.eq("courseId",args.courseId))       
+        .order("desc")
+        .collect();
+
+        
+        return Promise.all(
+          tasks.map(async (booking) => {
+            const course = await ctx.db.get(booking.courseId);
+            return {
+              ...booking,
+              course
+            };
+          })
+        );
+    },
+});
+
+export const getTasksById = query({
+    args: {
+      quizId:v.id("quizes")
+    },
+    handler: async (ctx, args) => {
+      const tasks =await ctx.db.get(args.quizId);
+  
+      return tasks
     },
 });
 

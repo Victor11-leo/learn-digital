@@ -40,7 +40,16 @@ export const getTasksByUser = query({
         .order("desc")
         .collect();
 
-        return tasks;
+        // return tasks;
+        return Promise.all(
+            tasks.map(async (booking) => {
+              const course = await ctx.db.get(booking.courseId);              
+              return {
+                ...booking,
+                course
+              };
+            })
+          );
     },
 });
 
